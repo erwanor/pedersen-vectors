@@ -9,27 +9,38 @@ struct Pedersen {
     // number of generators in the scheme
     commit_size: usize,
     // group generators
-    generators: Vec<CompressedRistretto>,
+    generators: Vec<RistrettoPoint>,
+    // base
+    base: RistrettoPoint,
 }
 
 struct Commitment {}
 
 impl Pedersen {
     fn new<R: RngCore + CryptoRng>(size: usize, rng: &mut R) -> Self {
-        let mut generators: Vec<CompressedRistretto> = Vec::with_capacity(size);
+        let mut generators: Vec<RistrettoPoint> = Vec::with_capacity(size);
 
         for i in 0..size {
-            let sampled_generator = RistrettoPoint::random(rng).compress();
+            let sampled_generator = RistrettoPoint::random(rng);
             generators.push(sampled_generator);
         }
 
         Pedersen {
             commit_size: size,
             generators,
+            base: RistrettoPoint::random(rng),
         }
     }
 
-    fn commit(scalars: Vec<Scalar>, randomness: Scalar) -> Commitment {
+    // for now assume there are `commit_size` scalars
+    fn commit(&self, scalars: Vec<Scalar>, randomness: Scalar) -> Commitment {
+        let mut gens = self.generators.to_vec(); // boo-hoo
+        gens.iter().zip(scalars.iter()).map(|(g, a)| g * a);
+        gens.iter()
+            .fold(self.base * randomness, |accum, commitment| {
+                commitment + accum
+            });
+        println!("{gens:?}");
         Commitment {}
     }
 }
