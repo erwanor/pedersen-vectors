@@ -5,7 +5,7 @@ use curve25519_dalek_ng::{
 use rand::{CryptoRng, RngCore};
 
 // An instantiation of a Pedersen commitment schemes
-struct Pedersen {
+pub struct Pedersen {
     // number of generators in the scheme
     commit_size: usize,
     // group generators
@@ -14,10 +14,10 @@ struct Pedersen {
     base: RistrettoPoint,
 }
 
-struct Commitment {}
+pub struct Commitment {}
 
 impl Pedersen {
-    fn new<R: RngCore + CryptoRng>(size: usize, rng: &mut R) -> Self {
+    pub fn new<R: RngCore + CryptoRng>(size: usize, rng: &mut R) -> Self {
         let mut generators: Vec<RistrettoPoint> = Vec::with_capacity(size);
 
         for i in 0..size {
@@ -33,7 +33,7 @@ impl Pedersen {
     }
 
     // for now assume there are `commit_size` scalars
-    fn commit(&self, scalars: Vec<Scalar>, randomness: Scalar) -> Commitment {
+    pub fn commit(&self, scalars: Vec<Scalar>, randomness: Scalar) -> Commitment {
         let mut gens = self.generators.to_vec(); // boo-hoo
         gens.iter().zip(scalars.iter()).map(|(g, a)| g * a);
         gens.iter()
@@ -41,7 +41,7 @@ impl Pedersen {
                 commitment + accum
             });
         println!("{gens:?}");
-        Commitment {}
+        unimplemented!()
     }
 }
 
