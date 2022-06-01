@@ -18,12 +18,10 @@ pub struct Commitment {}
 
 impl Pedersen {
     pub fn new<R: RngCore + CryptoRng>(size: usize, rng: &mut R) -> Self {
-        let mut generators: Vec<RistrettoPoint> = Vec::with_capacity(size);
-
-        for i in 0..size {
-            let sampled_generator = RistrettoPoint::random(rng);
-            generators.push(sampled_generator);
-        }
+        let mut generators = (0..size)
+            .into_iter()
+            .map(|index| RistrettoPoint::random(rng))
+            .collect::<Vec<RistrettoPoint>>();
 
         Pedersen {
             commit_size: size,
@@ -32,7 +30,6 @@ impl Pedersen {
         }
     }
 
-    // for now assume there are `commit_size` scalars
     pub fn commit(&self, scalars: Vec<Scalar>, randomness: Scalar) -> Commitment {
         let mut gens = self.generators.to_vec(); // boo-hoo
         gens.iter().zip(scalars.iter()).map(|(g, a)| g * a);
