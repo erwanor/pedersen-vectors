@@ -14,7 +14,7 @@ pub struct Pedersen {
     base: RistrettoPoint,
 }
 
-pub struct Commitment {}
+pub struct Commitment(CompressedRistretto);
 
 impl Pedersen {
     pub fn new<R: RngCore + CryptoRng>(size: usize, rng: &mut R) -> Self {
@@ -35,7 +35,7 @@ impl Pedersen {
         if scalars.len() > self.commit_size {
             unimplemented!("committing too many elements")
         } else {
-            (0..(scalars.len() - self.commit_size))
+            (0..(self.commit_size - scalars.len()))
                 .into_iter()
                 .map(|_| scalars.push(Scalar::zero()))
                 .collect::<Vec<_>>();
@@ -43,12 +43,13 @@ impl Pedersen {
 
         let mut gens = self.generators.to_vec(); // boo-hoo
         gens.iter().zip(scalars.iter()).map(|(g, a)| g * a);
-        gens.iter()
+        let commitment = gens
+            .iter()
             .fold(self.base * randomness, |accum, commitment| {
                 commitment + accum
             });
-        println!("{gens:?}");
-        unimplemented!()
+        println!("{commitment:?}");
+        Commitment(commitment.compress())
     }
 }
 
