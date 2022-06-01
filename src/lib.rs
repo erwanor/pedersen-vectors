@@ -30,7 +30,17 @@ impl Pedersen {
         }
     }
 
-    pub fn commit(&self, scalars: Vec<Scalar>, randomness: Scalar) -> Commitment {
+    // commit to N scalars, with randomness
+    pub fn commit(&self, mut scalars: Vec<Scalar>, randomness: Scalar) -> Commitment {
+        if scalars.len() > self.commit_size {
+            unimplemented!("committing too many elements")
+        } else {
+            (0..(scalars.len() - self.commit_size))
+                .into_iter()
+                .map(|_| scalars.push(Scalar::zero()))
+                .collect::<Vec<_>>();
+        }
+
         let mut gens = self.generators.to_vec(); // boo-hoo
         gens.iter().zip(scalars.iter()).map(|(g, a)| g * a);
         gens.iter()
