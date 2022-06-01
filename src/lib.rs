@@ -2,7 +2,9 @@ use curve25519_dalek_ng::{
     ristretto::{self, CompressedRistretto, RistrettoPoint},
     scalar::Scalar,
 };
+
 use rand::{CryptoRng, RngCore};
+use sha2::Sha512;
 
 // An instantiation of a Pedersen commitment schemes
 pub struct Pedersen {
@@ -17,16 +19,21 @@ pub struct Pedersen {
 pub struct Commitment(CompressedRistretto);
 
 impl Pedersen {
-    pub fn new<R: RngCore + CryptoRng>(size: usize, rng: &mut R) -> Self {
+    pub fn new(size: usize) -> Self {
         let mut generators = (0..size)
             .into_iter()
-            .map(|index| RistrettoPoint::random(rng))
+            .map(|index| {
+                let msg = format!("pedersen_domain_sep:{}", index);
+                RistrettoPoint::hash_from_bytes::<Sha512>(msg.as_bytes())
+            })
             .collect::<Vec<RistrettoPoint>>();
 
         Pedersen {
             commit_size: size,
             generators,
-            base: RistrettoPoint::random(rng),
+            base: RistrettoPoint::hash_from_bytes::<Sha512>(
+                format!("pedersen_domain_sep:H").as_bytes(),
+            ),
         }
     }
 
