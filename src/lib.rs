@@ -1,3 +1,5 @@
+use std::num;
+
 use curve25519_dalek_ng::{
     ristretto::{self, CompressedRistretto, RistrettoPoint},
     scalar::Scalar,
@@ -41,12 +43,13 @@ impl Pedersen {
     pub fn commit(&self, mut scalars: Vec<Scalar>, randomness: Scalar) -> Commitment {
         if scalars.len() > self.commit_size {
             unimplemented!("committing too many elements")
-        } else {
-            (0..(self.commit_size - scalars.len()))
-                .into_iter()
-                .map(|_| scalars.push(Scalar::zero()))
-                .collect::<Vec<_>>();
         }
+
+        let num_zero_elements = self.commit_size - scalars.len();
+
+        (0..num_zero_elements)
+            .into_iter()
+            .for_each(|_| scalars.push(Scalar::zero()));
 
         let mut gens = self.generators.to_vec(); // boo-hoo
         gens = gens
@@ -54,11 +57,13 @@ impl Pedersen {
             .zip(scalars.iter())
             .map(|(g, a)| g * a)
             .collect();
+
         let commitment = gens
             .iter()
             .fold(self.base * randomness, |accum, commitment| {
                 commitment + accum
             });
+
         println!("{commitment:?}");
         commitment
     }
@@ -110,6 +115,7 @@ mod tests {
 
     #[test]
     fn homomorphic_addition() {
+        // todo clean up the iterator forest
         let mut rng = OsRng;
         let mut trapdoor = Pedersen::new(100);
         let r1 = Scalar::random(&mut rng);
