@@ -4,7 +4,7 @@ This is a first version of a vector commitment library built on the [dalek-ng](h
 
 ## Using [bulletproofs::PedersenGens](https://docs.rs/bulletproofs/4.0.0/bulletproofs/struct.PedersenGens.html) instead
 
-Unless you _need_ to do vector commitments, you should be able to use the Pedersen commitment implementation that lives in the bulletproof crate linked above.
+Unless you _need_ to do vector commitments, you should be able to use the Pedersen commitment implementation that lives in the bulletproof crate linked above. It's a simple to use abstraction that lets you swap the bases as you wish.
 
 ## API
 
