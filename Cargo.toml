@@ -10,7 +10,8 @@ name = "pedersen"
 path = "src/main.rs"
 
 [dependencies]
-curve25519-dalek-ng = "4.1"
+bulletproofs = "4.0.0"
+curve25519-dalek-ng = { version = "4.1", features = ["alloc"] }
 rand = "0.8.5"
 rand_core = "0.6.3"
 sha2 = "0.9"
