@@ -8,7 +8,7 @@ pub struct VectorCommitter {
     commit_size: usize,
     // group generators
     generators: Vec<RistrettoPoint>,
-    // blinding base 
+    // blinding base
     base_blinding: RistrettoPoint,
 }
 
@@ -60,12 +60,6 @@ mod tests {
     use rand_core::OsRng;
 
     #[test]
-    fn it_works() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
-    }
-
-    #[test]
     // Check that com_ck(A, q) \cdot com_ck(B, r) = com_ck(A+B, q+r)
     fn homomorphic_addition() {
         let mut rng = OsRng;
@@ -73,21 +67,17 @@ mod tests {
         let r1 = Scalar::random(&mut rng);
         let r2 = Scalar::random(&mut rng);
 
-        let a_scalars: Vec<Scalar> = (0..100)
-            .into_iter()
-            .map(|_| Scalar::random(&mut rng))
-            .collect::<Vec<Scalar>>();
+        let mut a_scalars: Vec<Scalar> = Vec::with_capacity(100);
+        let mut b_scalars: Vec<Scalar> = Vec::with_capacity(100);
+        let mut sum_scalars: Vec<Scalar> = Vec::with_capacity(100);
 
-        let b_scalars: Vec<Scalar> = (0..100)
-            .into_iter()
-            .map(|_| Scalar::random(&mut rng))
-            .collect::<Vec<Scalar>>();
-
-        let sum_scalars: Vec<Scalar> = b_scalars
-            .iter()
-            .zip(a_scalars.iter())
-            .map(|(a, b)| a + b)
-            .collect::<Vec<Scalar>>();
+        (0..100).into_iter().for_each(|_| {
+            let a = Scalar::random(&mut rng);
+            let b = Scalar::random(&mut rng);
+            a_scalars.push(a);
+            b_scalars.push(b);
+            sum_scalars.push(a + b);
+        });
 
         let c1 = trapdoor.commit(a_scalars, r1);
         let c2 = trapdoor.commit(b_scalars, r2);
