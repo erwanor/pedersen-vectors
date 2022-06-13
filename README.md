@@ -17,7 +17,7 @@ let commitment_zero_vector = trapdoor(empty_vector, blinding_factor);
 
 ## How are the bases generated?
 
-The recipe to generate the commitment's bases *will change* before this crate hits v1.0.0. As of v0.1.2, for a `VectorCommitter` of size `N` where $0 \leq i \tn N$, we compute $G_i := PRF(\text{"pedersen_domain_sep"} || i)$. As well as an additional binding base $H := PRF(\text{"pedersen_domain_sep:H"})$. 
+The recipe to generate the commitment's bases *will change* before this crate hits v1.0.0. As of v0.1.2, for a `VectorCommitter` of size `N` where $0 \leq i \lt N$, we compute $G_i := PRF(\text{"pedersen\_domain\_sep"} || i)$. As well as an additional binding base $H := PRF(\text{"pedersen\_domain\_sep:H"})$. 
 
 ## Using [bulletproofs::PedersenGens](https://docs.rs/bulletproofs/4.0.0/bulletproofs/struct.PedersenGens.html) instead
 
