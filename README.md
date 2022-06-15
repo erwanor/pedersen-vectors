@@ -12,7 +12,7 @@ let mut trapdoor = VectorCommitter::new(1_000_000);
 let blinding_factor = Scalar::random(&mut rng);
 let empty_vector: Vec<Scalar> = Vec::new();
 // We commit to the zero vector here
-let commitment_zero_vector = trapdoor(empty_vector, blinding_factor);
+let commitment_zero_vector = trapdoor.commit(empty_vector, blinding_factor);
 ```
 
 ## How are the bases generated?
